@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Grades</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Grades for Student</h1>
+    </header>
+    <div class="container">
+        <table>
+            <tr>
+                <th>Course Name</th>
+                <th>Course Number</th>
+                <th>Section</th>
+                <th>Instructor</th>
+                <th>Credit Hours</th>
+                <th>Semester</th>
+                <th>Year</th>
+                <th>Grade</th>
+            </tr>
+            {% for grade in grades %}
+            <tr>
+                <td>{{ grade.course_name }}</td>
+                <td>{{ grade.course_number }}</td>
+                <td>{{ grade.section_identifier }}</td>
+                <td>{{ grade.instructor }}</td>
+                <td>{{ grade.credit_hours }}</td>
+                <td>{{ grade.semester }}</td>
+                <td>{{ grade.year }}</td>
+                <td>{{ grade.grade }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</body>
+</html>

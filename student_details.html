@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/static/styles.css">
+    <title>{{ student.name }}'s Details</title>
+</head>
+<body>
+    <h2>{{ student.name }}'s Grade Report</h2>
+    <table>
+        <tr>
+            <th>Course Name</th>
+            <th>Course Number</th>
+            <th>Credit Hours</th>
+            <th>Instructor</th>
+            <th>Semester</th>
+            <th>Year</th>
+            <th>Grade</th>
+        </tr>
+        {% for grade_report, section, course in grades %}
+        <tr>
+            <td>{{ course.course_name }}</td>
+            <td><a href="{{ url_for('prerequisite_course', course_number=course.course_number) }}">{{ course.course_number }}</a></td>
+            <td>{{ course.credit_hours }}</td>
+            <td>{{ section.instructor }}</td>
+            <td>{{ section.semester }}</td>
+            <td>{{ section.year }}</td>
+            <td>{{ grade_report.grade }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

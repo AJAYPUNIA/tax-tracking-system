@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Student Grades</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Student Grades</h1>
+    </header>
+    <div class="container">
+        <a href="{{ url_for('students') }}">Back to Students List</a>
+        <h2>Grades for Student</h2>
+        {% if grades %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Course Name</th>
+                        <th>Course Number</th>
+                        <th>Section ID</th>
+                        <th>Instructor</th>
+                        <th>Credit Hours</th>
+                        <th>Semester</th>
+                        <th>Year</th>
+                        <th>Grade</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for grade in grades %}
+                    <tr>
+                        <td>{{ grade.Course_name }}</td>
+                        <td>{{ grade.Course_number }}</td>
+                        <td>{{ grade.Section_identifier }}</td>
+                        <td>{{ grade.Instructor }}</td>
+                        <td>{{ grade.Credit_hours }}</td>
+                        <td>{{ grade.Semester }}</td>
+                        <td>{{ grade.Year }}</td>
+                        <td>{{ grade.Grade }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No grades available for this student.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

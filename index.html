@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tax Datails</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fdf8f8;
+            color: #0d0c0c;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #444;
+        }
+
+        h1 {
+            margin-top: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: center;
+            background-color: #de144e;
+            padding: 10px 0;
+        }
+
+        .navigation button {
+            background-color: #fff;
+            color: #adaf4c;
+            padding: 10px 20px;
+            margin: 0 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .navigation button:hover {
+            background-color: #de144e;
+            color: #fff;
+        }
+
+        .navigation button.active {
+            background-color: #de144e;
+            color: #fff;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .form-section input, .form-section select {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .edit-btn, .delete-btn {
+            padding: 5px 10px;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .edit-btn {
+            background-color: #007bff;
+        }
+
+        .edit-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .delete-btn {
+            background-color: #e74c3c;
+        }
+
+        .delete-btn:hover {
+            background-color: #c0392b;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #de144e;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .filter-section {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .filter-section select {
+            flex: 1;
+            margin: 0 10px;
+        }
+
+        .tax-summary {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tax Tracker</h1>
+    <div class="navigation">
+        <button id="nav-add-edit" class="active">Add/Edit Payment</button>
+        <button id="nav-view-all">View and Filter Payments</button>
+    </div>
+    <div class="container">
+        <div id="add-edit-section" class="section active">
+            <div class="form-section">
+                <h2>Add or Edit Payment</h2>
+                <form id="payment-form">
+                    <input type="hidden" id="payment-id">
+                    <label for="company">Company Name:</label>
+                    <input type="text" id="company" required>
+                    <label for="amount">Amount:</label>
+                    <input type="number" id="amount" step="0.01" required>
+                    <label for="payment-date">Payment Date:</label>
+                    <input type="date" id="payment-date">
+                    <label for="status">Status:</label>
+                    <select id="status" required>
+                        <option value="paid">Paid</option>
+                        <option value="unpaid">Unpaid</option>
+                    </select>
+                    <label for="due-date">Due Date:</label>
+                    <select id="due-date" required>
+                        <option value="">Select a Due Date</option>
+                    </select>
+                    <button type="submit">Save</button>
+                </form>
+            </div>
+
+            <div class="table-section">
+                <h2>All Payments </h2>
+                <table id="add-edit-payments-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Company</th>
+                            <th>Amount</th>
+                            <th>Tax Due (6%)</th>
+                            <th>Payment Date</th>
+                            <th>Status</th>
+                            <th>Due Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Dynamic rows -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="view-all-section" class="section">
+            <div class="filter-section">
+                <label for="filter-due-date">Filter by Due Date:</label>
+                <select id="filter-due-date">
+                    <option value="">All</option>
+                </select>
+            </div>
+            <div class="table-section">
+                <h2>All Payments</h2>
+                <table id="payments-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Company</th>
+                            <th>Amount</th>
+                            <th>Tax Due (6%)</th>
+                            <th>Payment Date</th>
+                            <th>Status</th>
+                            <th>Due Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Dynamic rows -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="tax-summary" id="filter-tax-summary">Total Tax Due: $0.00</div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            const API_URL = '/api/payments';
+
+            function resetForm() {
+                $('#payment-id').val('');
+                $('#company').val('');
+                $('#amount').val('');
+                $('#payment-date').val('');
+                $('#status').val('paid');
+                populateDueDateOptions();
+            }
+
+            function populateDueDateOptions() {
+                const currentYear = new Date().getFullYear();
+                const dueDates = [
+                    `${currentYear + 1}-04-15`,
+                    `${currentYear + 1}-06-15`,
+                    `${currentYear + 1}-09-15`,
+                    `${currentYear + 1}-01-15`
+                ];
+                const dueDateSelect = $('#due-date');
+                const filterDueDateSelect = $('#filter-due-date');
+
+                dueDateSelect.html('<option value="">Select a Due Date</option>');
+                filterDueDateSelect.html('<option value="">All</option>');
+
+                dueDates.forEach(dueDate => {
+                    dueDateSelect.append(`<option value="${dueDate}">${dueDate}</option>`);
+                    filterDueDateSelect.append(`<option value="${dueDate}">${dueDate}</option>`);
+                });
+            }
+
+            function calculateTax(amount) {
+                return (amount * 0.06).toFixed(2);
+            }
+            function calculateTotalTax(payments) {
+                return payments.reduce((total, payment) => total + (payment.amount * 0.06), 0).toFixed(2);
+            }
+
+            function populateAddEditPaymentsTable() {
+                fetch(API_URL)
+                    .then(response => response.json())
+                    .then(payments => {
+                        const tableBody = $('#add-edit-payments-table tbody');
+
+                        tableBody.html(payments.map(payment => `
+                            <tr>
+                                <td>${payment.id}</td>
+                                <td>${payment.company}</td>
+                                <td>${payment.amount.toFixed(2)}</td>
+                                <td>${calculateTax(payment.amount)}</td>
+                                <td>${payment.payment_date || 'N/A'}</td>
+                                <td>${payment.status}</td>
+                                <td>${payment.due_date}</td>
+                            </tr>
+                        `).join(''));
+                    })
+                    .catch(error => {
+                        console.error('Error fetching payments for Add/Edit table:', error);
+                        alert('Failed to load payments for Add/Edit table. Please try again later.');
+                    });
+            }
+
+            function populatePaymentsTable(filterDate = '') {
+                fetch(API_URL)
+                    .then(response => response.json())
+                    .then(payments => {
+                        const tableBody = $('#payments-table tbody');
+                        const filteredPayments = filterDate
+                            ? payments.filter(payment => payment.due_date === filterDate)
+                            : payments;
+
+                        tableBody.html(filteredPayments.map(payment => `
+                            <tr>
+                                <td>${payment.id}</td>
+                                <td>${payment.company}</td>
+                                <td>${payment.amount.toFixed(2)}</td>
+                                <td>${calculateTax(payment.amount)}</td>
+                                <td>${payment.payment_date || 'N/A'}</td>
+                                <td>${payment.status}</td>
+                                <td>${payment.due_date}</td>
+                                <td>
+                                    <button class="edit-btn" data-id="${payment.id}">Edit</button>
+                                    <button class="delete-btn" data-id="${payment.id}">Delete</button>
+                                </td>
+                            </tr>
+                        `).join(''));
+                        const totalTax = calculateTotalTax(filteredPayments);
+                        $('#filter-tax-summary').text(`Total Tax Due: $${totalTax}`);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching payments:', error);
+                        alert('Failed to load payments. Please try again later.');
+                    });
+            }
+
+            $('#filter-due-date').on('change', function () {
+                const selectedDate = $(this).val();
+                populatePaymentsTable(selectedDate);
+            });
+
+            $('#payment-form').on('submit', function (e) {
+                e.preventDefault();
+                const id = $('#payment-id').val();
+                const data = {
+                    company: $('#company').val(),
+                    amount: parseFloat($('#amount').val()),
+                    payment_date: $('#payment-date').val(),
+                    status: $('#status').val(),
+                    due_date: $('#due-date').val()
+                };
+
+                if (!data.due_date) {
+                    alert('Please select a valid due date.');
+                    return;
+                }
+
+                const method = id ? 'PUT' : 'POST';
+                const url = id ? `${API_URL}/${id}` : API_URL;
+
+                fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Failed to save payment');
+                        alert('Payment saved successfully');
+                        resetForm();
+                        populatePaymentsTable();
+                        populateAddEditPaymentsTable();
+                    })
+                    .catch(error => {
+                        console.error('Error saving payment:', error);
+                        alert('Failed to save payment. Please try again.');
+                    });
+            });
+
+            $('#payments-table').on('click', '.edit-btn', function () {
+                const id = $(this).data('id');
+                fetch(`${API_URL}/${id}`)
+                    .then(response => response.json())
+                    .then(payment => {
+                        $('#payment-id').val(payment.id);
+                        $('#company').val(payment.company);
+                        $('#amount').val(payment.amount);
+                        $('#payment-date').val(payment.payment_date);
+                        $('#status').val(payment.status);
+                        populateDueDateOptions();
+                        $('#due-date').val(payment.due_date);
+                        $('#nav-add-edit').click();
+                    })
+                    .catch(error => {
+                        console.error('Failed to fetch payment for editing:', error);
+                        alert('Failed to load payment details. Please try again.');
+                    });
+            });
+
+            $('#payments-table').on('click', '.delete-btn', function () {
+                const id = $(this).data('id');
+                if (confirm('Are you sure you want to delete this payment?')) {
+                    fetch(`${API_URL}/${id}`, { method: 'DELETE' })
+                        .then(response => {
+                            if (!response.ok) throw new Error('Failed to delete payment');
+                            alert('Payment deleted successfully');
+                            populatePaymentsTable();
+                            populateAddEditPaymentsTable();
+                        })
+                        .catch(error => {
+                            console.error('Error deleting payment:', error);
+                            alert('Failed to delete payment. Please try again.');
+                        });
+                }
+            });
+
+            $('#nav-add-edit').click(function () {
+                $('.navigation button').removeClass('active');
+                $(this).addClass('active');
+                $('.section').removeClass('active');
+                $('#add-edit-section').addClass('active');
+                resetForm();
+                populateAddEditPaymentsTable();
+            });
+
+            $('#nav-view-all').click(function () {
+                $('.navigation button').removeClass('active');
+                $(this).addClass('active');
+                $('.section').removeClass('active');
+                $('#view-all-section').addClass('active');
+                populatePaymentsTable();
+            });
+
+            populateDueDateOptions();
+            populatePaymentsTable();
+            populateAddEditPaymentsTable();
+        });
+    </script>
+</body>
+</html>
